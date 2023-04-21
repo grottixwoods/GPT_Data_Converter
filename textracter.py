@@ -8,7 +8,7 @@ input_directory = "./docx_files/"
 output_directory = "./database_txt/"
 
 # список обрабатываемых textract'ом типов документов
-file_types = (".doc",".docx", ".rtf", ".pdf", ".xlsx", ".ppt")
+file_types = (".doc", ".docx", ".rtf", ".pdf", ".xlsx", ".ppt")
 
 # Проходимся по директории с условием окончания документов на file_types
 for filename in os.listdir(input_directory):
