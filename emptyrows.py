@@ -1,6 +1,6 @@
 import os
 
-directory = 'D:/Projects/tsiars_gpt/runtime/database_txt/' 
+directory = './database_txt/'
 
 for filename in os.listdir(directory):
     if filename.endswith('.txt'):
