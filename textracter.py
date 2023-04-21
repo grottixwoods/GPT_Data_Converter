@@ -36,7 +36,7 @@ for filename in os.listdir(output_directory):
         filepath = os.path.join(output_directory, filename)
         with open(filepath, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-        # Убираем пустые строки
+        # Убираем пустые cтроки
         lines = [line for line in lines if line.strip()] 
         with open(filepath, 'w', encoding='utf-8') as f:
             f.writelines(lines)
