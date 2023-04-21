@@ -11,7 +11,7 @@ output_directory = "D:/Projects/tsiars_gpt/database_txt"
 # список обрабатываемых textract'ом типов документов
 file_types = (".docx", ".pdf", ".xlsx", ".ppt")
 
-#пересохраняем .doc в .docx
+#пересохраняем .doc в .docx (Только для Win версии)
 for filename in os.listdir(input_directory):
     if filename.endswith(".doc"):
         input_path = os.path.join(input_directory, filename)
@@ -20,8 +20,7 @@ for filename in os.listdir(input_directory):
         doc.save(output_path)
         os.remove(input_path)
 
-
-# Проходимся по директории с условием окончания документов на file_types
+# Проходимся по директории с условием окончания документов на file_types (P.S. Antiword работает только на Linux)
 for filename in os.listdir(input_directory):
     if filename.endswith(file_types):
         # достаем данные из файлов
