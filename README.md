@@ -1,1 +1,0 @@
-# tsiars_gpt
