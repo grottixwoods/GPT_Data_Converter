@@ -3,10 +3,10 @@ import textract
 import aspose.words as aw
 
 # Исходная директория
-input_directory = 'D:/papka/tsiars_gpt/docx_files'
+input_directory = 'docx_files'
 
 # Конечная директория
-output_directory = 'D:/papka/tsiars_gpt/database_txt'
+output_directory = 'database_txt'
 
 # Список обрабатываемых textract'ом типов документов
 file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')
