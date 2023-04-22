@@ -3,7 +3,7 @@ import textract
 import aspose.words as aw
 
 # Исходная директория
-input_directory = 'D:/papka/'
+input_directory = 'D:/papka/tsiars_gpt/docx_files'
 
 # Конечная директория
 output_directory = 'D:/papka/tsiars_gpt/database_txt'
