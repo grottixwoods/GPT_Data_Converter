@@ -4,7 +4,6 @@ import aspose.words as aw
 
 # Исходная директория
 input_directory = 'input_files'
-
 # Конечная директория
 output_directory = 'output_txt'
 
@@ -38,6 +37,7 @@ def converter():
                       encoding='utf-8') as f:
                 f.write(text)
             os.remove(input_path)
+
     # Проходимся по директории с условием окончания документов на .txt
     for filename in os.listdir(output_directory):
         if filename.endswith('.txt'):
