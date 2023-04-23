@@ -2,6 +2,20 @@ from bs4 import BeautifulSoup
 import urllib3
 import wget
 from textracter import converter, input_directory
+import os
+
+# Исходная директория
+input_files = 'input_files'
+# Конечная директория
+output_txt = 'output_txt'
+
+# Проверяем и создаем исходную директорию
+if not os.path.exists(input_files):
+    os.makedirs(input_files)
+# Проверяем и создаем конечную директорию
+if not os.path.exists(output_txt):
+    os.makedirs(output_txt)
+
 
 url_root = 'https://www.pravovik24.ru'
 url = "https://www.pravovik24.ru/documents"
