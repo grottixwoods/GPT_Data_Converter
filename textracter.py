@@ -1,6 +1,6 @@
 import os
 import textract
-import aspose.words as aw
+import platform
 
 # Исходная директория
 input_directory = 'input_files'
@@ -10,17 +10,18 @@ output_directory = 'output_txt'
 # Список обрабатываемых textract'ом типов документов
 file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')
 
-
 def converter():
     # Пересохраняем .doc в .docx (Только для Win версии)
-    for filename in os.listdir(input_directory):
-        if filename.endswith('.doc'):
-            input_path = os.path.join(input_directory, filename)
-            output_path = os.path.join(input_directory,
-                                       filename.split('.')[0] + '.docx')
-            doc = aw.Document(input_path)
-            doc.save(output_path)
-            os.remove(input_path)
+    if platform.system() == "Windows":
+        import aspose.words as aw
+        for filename in os.listdir(input_directory):
+            if filename.endswith('.doc'):
+                input_path = os.path.join(input_directory, filename)
+                output_path = os.path.join(input_directory,
+                                           filename.split('.')[0] + '.docx')
+                doc = aw.Document(input_path)
+                doc.save(output_path)
+                os.remove(input_path)
 
     # Проходимся по директории с условием окончания документов на file_types
     # (P.S. Antiword работает только на Linux)
