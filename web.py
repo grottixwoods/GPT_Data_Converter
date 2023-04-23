@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import urllib3
 import wget
-from textracter import converter, input_directory
+from textracter import converter
 import os
 
 # Исходная директория
@@ -54,7 +54,7 @@ for link in soup.findAll('a'):
                 if 'upload' in buf:
                     response = wget.download(
                         url_root+buf,
-                        out=input_directory
+                        out=input_files
                     )
                     converter()
     elif 'documents' in buf:
@@ -71,6 +71,6 @@ for link in soup.findAll('a'):
             if 'upload' in buf:
                 response = wget.download(
                     url_root+buf,
-                    out=input_directory
+                    out=input_files
                 )
                 converter()

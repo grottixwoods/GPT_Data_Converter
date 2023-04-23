@@ -1,11 +1,7 @@
 import os
 import textract
 import platform
-
-# Исходная директория
-input_directory = 'input_files'
-# Конечная директория
-output_directory = 'output_txt'
+from web import input_files, output_txt
 
 # Список обрабатываемых textract'ом типов документов
 file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')
@@ -14,10 +10,10 @@ def converter():
     # Пересохраняем .doc в .docx (Только для Win версии)
     if platform.system() == "Windows":
         import aspose.words as aw
-        for filename in os.listdir(input_directory):
+        for filename in os.listdir(input_files):
             if filename.endswith('.doc'):
-                input_path = os.path.join(input_directory, filename)
-                output_path = os.path.join(input_directory,
+                input_path = os.path.join(input_files, filename)
+                output_path = os.path.join(input_files,
                                            filename.split('.')[0] + '.docx')
                 doc = aw.Document(input_path)
                 doc.save(output_path)
@@ -25,25 +21,24 @@ def converter():
 
     # Проходимся по директории с условием окончания документов на file_types
     # (P.S. Antiword работает только на Linux)
-    for filename in os.listdir(input_directory):
+    for filename in os.listdir(input_files):
         if filename.endswith(file_types):
             # Достаем данные из файлов
-            input_path = os.path.join(input_directory, filename)
-            text = textract.process(os.path.join(input_directory,
+            input_path = os.path.join(input_files, filename)
+            text = textract.process(os.path.join(input_files,
                                                  filename)).decode('utf-8')
             # Создаем новое имя с расширением txt для файла
             new_filename = os.path.splitext(filename)[0] + '.txt'
             # Сохраняем файл
-            with open(os.path.join(output_directory, new_filename), 'w',
+            with open(os.path.join(output_txt, new_filename), 'w',
                       encoding='utf-8') as f:
                 f.write(text)
             os.remove(input_path)
 
     # Проходимся по директории с условием окончания документов на .txt
-    for filename in os.listdir(output_directory):
+    for filename in os.listdir(output_txt):
         if filename.endswith('.txt'):
-            input_path = os.path.join(input_directory, filename)
-            filepath = os.path.join(output_directory, filename)
+            filepath = os.path.join(output_txt, filename)
             with open(filepath, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
             # Убираем пустые cтроки
