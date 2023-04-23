@@ -2,3 +2,4 @@
 *.DS_Store
 input_files/
 output_txt/
+venv/
