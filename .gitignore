@@ -1,4 +1,4 @@
 .idea/
 *.DS_Store
-database_txt/
-docx_files/
+input_files/
+output_txt/
