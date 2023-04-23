@@ -11,14 +11,52 @@ links = []
 
 response = http.request('GET', url)
 
-soup = BeautifulSoup(response.data.decode('utf-8'), 'html.parser')
+soup = BeautifulSoup(
+    response.data.decode('utf-8'),
+    'html.parser'
+)
 for link in soup.findAll('a'):
     buf = link.get('href')
-    if 'documents' in buf:
-        response1 = http.request('GET', url_root+buf)
-        soup2 = BeautifulSoup(response1.data.decode('utf-8'), 'html.parser')
+    if '/documents/dogovory/' in buf:
+        response1 = http.request(
+            'GET',
+            url_root+buf
+        )
+        soup2 = BeautifulSoup(
+            response1.data.decode('utf-8'),
+            'html.parser'
+        )
+        if 'documents' in buf:
+            response2 = http.request(
+                'GET',
+                url_root+buf
+            )
+            soup2 = BeautifulSoup(
+                response1.data.decode('utf-8'),
+                'html.parser'
+            )
+            for link in soup2.findAll('a'):
+                buf = link.get('href')
+                if 'upload' in buf:
+                    response = wget.download(
+                        url_root+buf,
+                        out=input_directory
+                    )
+                    converter()
+    elif 'documents' in buf:
+        response1 = http.request(
+            'GET',
+            url_root+buf
+        )
+        soup2 = BeautifulSoup(
+            response1.data.decode('utf-8'),
+            'html.parser'
+        )
         for link in soup2.findAll('a'):
             buf = link.get('href')
             if 'upload' in buf:
-                response = wget.download(url_root+buf, out=input_directory)
+                response = wget.download(
+                    url_root+buf,
+                    out=input_directory
+                )
                 converter()
