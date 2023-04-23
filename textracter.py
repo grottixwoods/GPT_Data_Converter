@@ -3,10 +3,10 @@ import textract
 import aspose.words as aw
 
 # Исходная директория
-input_directory = 'docx_files'
+input_directory = 'input_files'
 
 # Конечная директория
-output_directory = 'database_txt'
+output_directory = 'output_txt'
 
 # Список обрабатываемых textract'ом типов документов
 file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')
