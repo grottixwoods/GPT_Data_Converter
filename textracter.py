@@ -1,7 +1,11 @@
 import os
 import textract
 import platform
-from web import input_files, output_txt
+
+# Исходная директория
+input_files = 'input_files'
+# Конечная директория
+output_txt = 'output_txt'
 
 # Список обрабатываемых textract'ом типов документов
 file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')

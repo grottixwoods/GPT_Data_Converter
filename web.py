@@ -1,13 +1,8 @@
 from bs4 import BeautifulSoup
 import urllib3
 import wget
-from textracter import converter
+from textracter import converter, input_files, output_txt
 import os
-
-# Исходная директория
-input_files = 'input_files'
-# Конечная директория
-output_txt = 'output_txt'
 
 # Проверяем и создаем исходную директорию
 if not os.path.exists(input_files):
