@@ -1,5 +1,6 @@
 .idea/
 *.DS_Store
+ master
 input_files/
 output_txt/
 __pycache__/

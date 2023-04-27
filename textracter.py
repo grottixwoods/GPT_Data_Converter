@@ -46,7 +46,11 @@ def converter():
             filepath = os.path.join(output_txt, filename)
             with open(filepath, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
-            # Убираем пустые cтроки
             lines = [line for line in lines if line.strip()]
+            # Убираем вотермарки
+            if 'Created with an evaluation copy of Aspose.Words.' in lines[-1]:
+                lines.pop()
+                lines.pop(0)
+            # Убираем пустые cтроки
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.writelines(lines)
