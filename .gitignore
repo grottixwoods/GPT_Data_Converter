@@ -1,7 +1,6 @@
 .idea/
 *.DS_Store
-database_txt/
-docx_files/
+ master
 input_files/
 output_txt/
 __pycache__/
