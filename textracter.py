@@ -10,6 +10,7 @@ output_txt = 'output_txt'
 # Список обрабатываемых textract'ом типов документов
 file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')
 
+
 def converter():
     # Пересохраняем .doc в .docx (Только для Win версии)
     if platform.system() == "Windows":
