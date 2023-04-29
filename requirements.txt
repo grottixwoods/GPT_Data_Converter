@@ -1,0 +1,4 @@
+urllib3==1.26.15
+wget==3.2
+beautifulsoup4==4.8.2
+textract==1.6.5
