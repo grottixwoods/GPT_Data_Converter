@@ -65,9 +65,8 @@ def converter():
             with open(os.path.join(output_txt, new_filename), 'w',
                       encoding='utf-8') as f:
                 f.write(text)
-            os.remove(input_path)
-        
     csv_file.close()
+
     # Проходимся по директории с условием окончания документов на .txt
     for filename in os.listdir(output_txt):
         if filename.endswith('.txt'):
@@ -81,5 +80,6 @@ def converter():
                 lines.pop(0)
             # Убираем пустые cтроки
             with open(filepath, 'w', encoding='utf-8') as f:
-                f.writelines(lines)
-
+                f.writelines(lines)   
+    
+    os.remove(input_path)    
