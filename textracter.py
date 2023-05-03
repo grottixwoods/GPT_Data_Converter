@@ -4,10 +4,6 @@ import platform
 import csv
 from docx import Document
 import PyPDF2
-import pytesseract
-from pdf2image import convert_from_path
-import glob
-
 
 # Исходная директория
 input_files = 'input_files'
@@ -38,16 +34,6 @@ def converter():
     # Проходимся по директории с условием окончания документов на file_types
     # (P.S. Antiword работает только на Linux)
     for filename in os.listdir(input_files):
-        if filename.endswith(".pdf"):
-
-            pages = convert_from_path(pdf, 400)
-            text = ""
-            for pageNum, imgBlob in enumerate(pages):
-                text += pytesseract.image_to_string(imgBlob, lang='rus') + '\n'
-            with open(f'{pdf[:-4]}.txt', 'w') as the_file:
-                the_file.write(text)
-                os.remove(pdf)
-
         if filename.endswith(file_types):
             # Достаем данные из файлов
             input_path = os.path.join(input_files, filename)
