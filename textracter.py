@@ -4,6 +4,9 @@ import platform
 import csv
 from docx import Document
 import PyPDF2
+import pytesseract
+from pdf2image import convert_from_path
+
 
 # Исходная директория
 input_files = 'input_files'
@@ -13,8 +16,17 @@ output_txt = 'output_txt'
 # Список обрабатываемых textract'ом типов документов
 file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')
 
+def has_text(pdf_file_path):
+    with open(f'input_files/{pdf_file_path}', 'rb') as f:
+        pdf_reader = PyPDF2.PdfReader(f)
+        for page in pdf_reader.pages:
+            text = page.extract_text()
+            if text:
+                return True
+    return False
+
 def converter():
-    # Пересохраняем .doc в .docx (Только для Win версии)
+    # Пересохраняем .doc в .docx (Только для Windows)
     if platform.system() == "Windows":
         import aspose.words as aw
         for filename in os.listdir(input_files):
@@ -31,8 +43,22 @@ def converter():
     csv_writer.writerow(["Metadata", "Path to file"])
 
     # Проходимся по директории с условием окончания документов на file_types
-    # (P.S. Antiword работает только на Linux)
+    # (P.S. Antiword работает только на MacOS)
     for filename in os.listdir(input_files):
+        if filename.endswith('.pdf'):
+            if has_text(filename):
+                print(f'PDF-файл {filename} содержит текст')
+            else:
+                print(f'PDF-файл {filename} не содержит текст')
+                pages = convert_from_path(f'input_files/{filename}', 500)
+                text = ""
+                print(f'PDF-файл {filename} не содержит текст2')
+                for pageNum, imgBlob in enumerate(pages):
+                    text += pytesseract.image_to_string(imgBlob, lang='rus') + '\n'
+                    print(f'PDF-файл {filename} не содержит текст3')
+                with open(f'{filename[:-4]}.txt', 'w') as the_file:
+                    the_file.write(text)
+
         if filename.endswith(file_types):
             # Достаем данные из файлов
             input_path = os.path.join(input_files, filename)
@@ -59,8 +85,8 @@ def converter():
             elif filename.endswith(".pdf"):
                 # Extract metadata from a PDF document
                 pdf_file = open(os.path.join(input_files, filename), 'rb')
-                pdf_reader = PyPDF2.PdfFileReader(pdf_file)
-                metadata_dict = pdf_reader.getDocumentInfo()
+                pdf_reader = PyPDF2.PdfReader(pdf_file)
+                metadata_dict = pdf_reader.metadata
                 # Write the metadata to the CSV file
                 csv_writer.writerow
                 (
