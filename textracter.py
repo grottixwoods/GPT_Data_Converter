@@ -18,10 +18,11 @@ file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')
 
 def has_text(pdf_file_path):
     with open(f'input_files/{pdf_file_path}', 'rb') as f:
-        pdf_reader = PyPDF2.PdfReader(f)
-        for page in pdf_reader.pages:
-            text = page.extract_text()
-            if text:
+        pdf_reader = PyPDF2.PdfFileReader(f)
+        for i in range(2):
+            page = pdf_reader.getPage(i)
+            text = page.extractText()
+            if text and len(text) > 100:
                 return True
     return False
 
