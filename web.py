@@ -51,7 +51,6 @@ for link in soup.findAll('a'):
                         url_root+buf,
                         out=input_files
                     )
-                    converter()
     elif 'documents' in buf:
         response1 = http.request(
             'GET',
@@ -68,4 +67,4 @@ for link in soup.findAll('a'):
                     url_root+buf,
                     out=input_files
                 )
-                converter()
+converter()
