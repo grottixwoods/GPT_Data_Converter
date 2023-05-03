@@ -7,7 +7,7 @@ import os
 pdfs = glob.glob(r"input_files/*.pdf")
 i = 0
 for pdf in pdfs:
-    pages = convert_from_path(pdf, 100)
+    pages = convert_from_path(pdf, 400)
     print(i, 'картинки')
     i += 1
     text = ""
