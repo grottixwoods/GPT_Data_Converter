@@ -1,74 +1,109 @@
 import os
 import textract
 import csv
-import PyPDF2
-import pytesseract
+import xlrd
+import openpyxl
+from openpyxl import Workbook
+from openpyxl.utils.cell import get_column_letter
+from openpyxl.reader.excel import load_workbook
+import pandas as pd
 import win32com.client as win32
 import re
-
-from pdf2image import convert_from_path
-from pdf2img2txt import has_text
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfdocument import PDFDocument
 from win32com.client import constants
 from docx import Document
+
+#__________________TODO__________________
+#     Доделать обработку сканов pdf
 
 # Список обрабатываемых textract'ом типов документов
 file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')
 
+def convert_xls_to_xlsx(input_files):
+
+    for filename in os.listdir(input_files):
+        if filename.endswith('.xls'):
+            xls_path = os.path.join(input_files, filename)
+            wb = xlrd.open_workbook(xls_path)
+            xlsx_path = os.path.join(input_files, filename[:-4] + '.xlsx')
+            new_wb = Workbook()
+            ws = new_wb.active
+
+            for sheet_name in wb.sheet_names():
+                sheet = wb.sheet_by_name(sheet_name)
+
+                for row in range(sheet.nrows):
+                    for col in range(sheet.ncols):
+                        col_letter = get_column_letter(col + 1)
+                        cell_value = sheet.cell_value(row, col)
+                        ws[f"{col_letter}{row + 1}"] = cell_value
+            new_wb.save(xlsx_path)
+            os.remove(xls_path)
+
 def convert_doc_to_docx(input_files):
        
     for filename in os.listdir(input_files):
-        # Opening MS Word
-        input_path = os.path.join('D:\\Projects\\tsiars_gpt\\input_files', filename)
-        word = win32.gencache.EnsureDispatch('Word.Application')
-        doc = word.Documents.Open(input_path)
-        print(doc)
-        doc.Activate()
-
-        # Rename path with .docx
-        new_file_abs = os.path.abspath(input_path)
-        new_file_abs = re.sub(r'\.\w+$', '.docx', new_file_abs)
-
-        # Save and Close
-        word.ActiveDocument.SaveAs(
-            new_file_abs, FileFormat=constants.wdFormatXMLDocument
-        )
-        doc.Close(False)
-        os.remove(input_path)
+        if filename.endswith(".doc"):
+            input_path = os.path.join('D:\\Projects\\tsiars_gpt\\input_files', filename)
+            word = win32.gencache.EnsureDispatch('Word.Application')
+            doc = word.Documents.Open(input_path)
+            print(doc)
+            doc.Activate()
+            new_file_abs = os.path.abspath(input_path)
+            new_file_abs = re.sub(r'\.\w+$', '.docx', new_file_abs)
+            word.ActiveDocument.SaveAs(
+                new_file_abs, FileFormat=constants.wdFormatXMLDocument
+            )
+            doc.Close(False)
+            os.remove(input_path)
 
 
 def metadata_extracter(input_files, output_txt):
-    
-    csv_file = open(os.path.join(output_txt, "metadata.csv"), 'w', newline='')
-    csv_writer = csv.writer(csv_file)
-    csv_writer.writerow(["Metadata", "Path to file"])
+
+    df = pd.DataFrame(columns=['Meta', 'Path'])
 
     for filename in os.listdir(input_files):
-        if filename.endswith(file_types):
-            if filename.endswith(".docx"):
-                # Word Meta
-                doc = Document(os.path.join(input_files, filename))
-                metadata = doc.core_properties
-                metadata_dict = {"Title": metadata.title,
-                                "Author": metadata.author,
-                                "Subject": metadata.subject,
-                                "Keywords": metadata.keywords,
-                                "Category": metadata.category,
-                                "Comments": metadata.comments}
-                csv_writer.writerow([metadata_dict, os.path.join(output_txt, f'{filename[:-5]}.txt')])
+        if filename.endswith(".docx"):
+            doc = Document(os.path.join(input_files, filename))
+            metadata = doc.core_properties
+            metadata_dict = {"Title": metadata.title,
+                            "Author": metadata.author,
+                            "Subject": metadata.subject,
+                            "Keywords": metadata.keywords,
+                            "Category": metadata.category,
+                            "Comments": metadata.comments}
+            df = df._append({'Meta': metadata_dict,
+                            'Path': os.path.join(output_txt, f'{filename[:-5]}.txt')},
+                            ignore_index=True)
+        
+        elif filename.endswith(".pdf"):
+            with open(os.path.join(input_files, filename), 'rb') as pdf_file:
+                parser = PDFParser(pdf_file)
+                doc = PDFDocument(parser)
+                metadata_dict = doc.info[0]
 
-            elif filename.endswith(".pdf"):
-                # Pdf Meta
-                pdf_file = open(os.path.join(input_files, filename), 'rb')
-                pdf_reader = PyPDF2.PdfReader(pdf_file)
-                metadata_dict = pdf_reader.metadata
-                csv_writer.writerow([metadata_dict, os.path.join(output_txt, f'{filename[:-5]}.txt')])
-    csv_file.close()
+                df = df._append({'Meta': metadata_dict,
+                                'Path': os.path.join(output_txt, f'{filename[:-5]}.txt')},
+                                ignore_index=True)
+        
+        elif filename.endswith(".xlsx") or filename.endswith(".xlsm") or filename.endswith(".xltx") or filename.endswith(".xltm"):
+            wb = openpyxl.load_workbook(os.path.join(input_files, filename))
+            metadata_dict = {}
+            metadata_dict['authors'] = wb.properties.creator
+            metadata_dict['theme'] = wb.properties.title
+            metadata_dict['tags'] = wb.properties.keywords
+            metadata_dict['category'] = wb.properties.category
+            metadata_dict['comments'] = wb.properties.description
+            df = df._append({'Meta': metadata_dict,
+                            'Path': os.path.join(output_txt, f'{filename[:-5]}.txt')},
+                            ignore_index=True)
+    
+    df.to_csv('dataframe.csv', index=False)
+    
+                
 
 def textract_converter(input_files, output_txt):
-    
-    csv_file = open(os.path.join(output_txt, "metadata.csv"), 'w', newline='')
-    csv_writer = csv.writer(csv_file)
-    csv_writer.writerow(["Metadata", "Path to file"])
     
     for filename in os.listdir(input_files):
 
