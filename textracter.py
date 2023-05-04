@@ -43,6 +43,20 @@ def metadata_extracter(input_files, output_txt):
     csv_writer.writerow(["Metadata", "Path to file"])
 
     for filename in os.listdir(input_files):
+        if filename.endswith('.pdf'):
+            if has_text(filename):
+                print(f'PDF-файл {filename} содержит текст')
+            else:
+                print(f'PDF-файл {filename} не содержит текст')
+                pages = convert_from_path(f'input_files/{filename}', 500)
+                text = ""
+                print(f'PDF-файл {filename} не содержит текст2')
+                for pageNum, imgBlob in enumerate(pages):
+                    text += pytesseract.image_to_string(imgBlob, lang='rus') + '\n'
+                    print(f'PDF-файл {filename} не содержит текст3')
+                with open(f'{filename[:-4]}.txt', 'w') as the_file:
+                    the_file.write(text)
+
         if filename.endswith(file_types):
             if filename.endswith(".docx"):
                 # Word Meta
