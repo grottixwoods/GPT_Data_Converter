@@ -173,5 +173,10 @@ def lines_editor(output_txt):
             text = re.sub(r'(\w+)-\n(\w+)', r'\1\2', text)
             text = re.sub(r'(?<=\w)– ', '', text)
             text = re.sub(r'(?<=\w)- ', '', text)
+            text = text.replace(" ", " ")
+            text = text.replace("�", "")
+            text = text.replace("", " ")
+            # text = re.sub(r'[^\w\d,.\- ]', '', text)
+
             with open(filepath, 'w', encoding='utf-8') as file:
                 file.write(text)            
