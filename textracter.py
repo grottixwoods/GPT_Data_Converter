@@ -47,7 +47,6 @@ def convert_xls_to_xlsx(input_files):
 
 
 def convert_doc_to_docx(input_files):
-
     for filename in os.listdir(input_files):
         if filename.endswith(".doc"):
             input_path = os.path.join('D:\\Projects\\tsiars_gpt\\input_files', filename)
@@ -111,6 +110,7 @@ def metadata_extracter(input_files, output_txt):
 def textract_converter(input_files, output_txt):
 
     for filename in os.listdir(input_files):
+        a = False
         if filename.endswith('.pdf'):
             with open(f'input_files/{filename}', 'rb') as file:
                 a = False
