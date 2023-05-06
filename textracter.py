@@ -13,6 +13,7 @@ import pytesseract
 from pdf2image import convert_from_path
 import PyPDF2
 import platform
+from PIL import Image
 if platform.system() == "Windows":
     from win32com.client import constants
     import win32com.client as win32
@@ -139,6 +140,17 @@ def textract_converter(input_files, output_txt):
         
         if filename.endswith(file_types):
             text = textract.process(os.path.join(input_files, filename)).decode('utf-8')
+            new_filename = os.path.splitext(filename)[0] + '.txt'
+            with open(os.path.join(output_txt, new_filename), 'w', encoding='utf-8') as f:
+                f.write(text)
+
+def jpg_to_txt(input_files, output_txt):
+    for filename in os.listdir(input_files):
+        if filename.endswith('.jpg'):
+            image = Image.open(os.path.join(input_files, filename))
+            # Используем pytesseract для распознавания текста на изображении
+            text = pytesseract.image_to_string(image, lang='rus')
+            # Сохраняем текстовый результат в файл
             new_filename = os.path.splitext(filename)[0] + '.txt'
             with open(os.path.join(output_txt, new_filename), 'w', encoding='utf-8') as f:
                 f.write(text)
