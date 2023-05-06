@@ -5,22 +5,24 @@ import openpyxl
 from openpyxl import Workbook
 from openpyxl.utils.cell import get_column_letter
 import pandas as pd
-import win32com.client as win32
 import re
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
-from win32com.client import constants
 from docx import Document
 import pytesseract
 from pdf2image import convert_from_path
 import PyPDF2
+import platform
+if platform.system() == "Windows":
+    from win32com.client import constants
+    import win32com.client as win32
 
 
 # __________________TODO__________________
 #     
 
 # Список обрабатываемых textract'ом типов документов
-file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')
+file_types = ('.docx', '.xlsx', '.ppt', '.xls')
 
 def convert_xls_to_xlsx(input_files):
     for filename in os.listdir(input_files):
@@ -128,7 +130,13 @@ def textract_converter(input_files, output_txt):
                 new_filename = os.path.splitext(filename)[0] + '.txt'
                 with open(os.path.join(output_txt, new_filename), 'w', encoding='utf-8') as f:
                     f.write(text)
-
+                    
+            else:
+                text = textract.process(os.path.join(input_files, filename)).decode('utf-8')
+                new_filename = os.path.splitext(filename)[0] + '.txt'
+                with open(os.path.join(output_txt, new_filename), 'w', encoding='utf-8') as f:
+                    f.write(text)
+        
         if filename.endswith(file_types):
             text = textract.process(os.path.join(input_files, filename)).decode('utf-8')
             new_filename = os.path.splitext(filename)[0] + '.txt'
