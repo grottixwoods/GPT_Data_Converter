@@ -5,11 +5,9 @@ import openpyxl
 from openpyxl import Workbook
 from openpyxl.utils.cell import get_column_letter
 import pandas as pd
-import win32com.client as win32
 import re
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
-from win32com.client import constants
 from docx import Document
 import pytesseract
 from pdf2image import convert_from_path
@@ -24,7 +22,7 @@ file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')
 
 
 def has_text(file_path):
-    with open(file_path, 'rb') as file:
+    with open(f'input_files/{file_path}', 'rb') as file:
         pdf_reader = PyPDF2.PdfReader(file)
         for page in pdf_reader.pages:
             text = page.extract_text()
@@ -58,6 +56,8 @@ def convert_xls_to_xlsx(input_files):
 
 
 def convert_doc_to_docx(input_files):
+    from win32com.client import constants
+    import win32com.client as win32
     for filename in os.listdir(input_files):
         if filename.endswith(".doc"):
             input_path = os.path.join('D:\\Projects\\tsiars_gpt\\input_files', filename)
@@ -120,8 +120,16 @@ def metadata_extracter(input_files, output_txt):
 
 def textract_converter(input_files, output_txt):
     for filename in os.listdir(input_files):
+        a = False
         if filename.endswith('.pdf'):
-            if has_text(filename):
+            with open(f'input_files/{filename}', 'rb') as file:
+                pdf_reader = PyPDF2.PdfReader(file)
+                for page in pdf_reader.pages:
+                    text = page.extract_text()
+                    if text:
+                        a = True
+            a = False
+            if a:
                 pass
                 # Перевод PDF -> Docx -> txt
             else:
