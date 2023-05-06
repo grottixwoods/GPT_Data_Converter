@@ -142,7 +142,7 @@ def textract_converter(input_files, output_txt):
             with open(os.path.join(output_txt, new_filename), 'w', encoding='utf-8') as f:
                 f.write(text)
 
-        if filename.endswith('.jpg'):
+        if filename.endswith('.jpg','.png','.jpeg','.bmp','tiff'):
             image = Image.open(os.path.join(input_files, filename))
             text = pytesseract.image_to_string(image, lang='rus')
             new_filename = os.path.splitext(filename)[0] + '.txt'
