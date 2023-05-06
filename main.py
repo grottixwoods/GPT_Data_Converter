@@ -1,6 +1,8 @@
 from textracter import convert_doc_to_docx, metadata_extracter, textract_converter, \
     lines_editor, convert_xls_to_xlsx
 import platform
+
+
 # Исходная директория
 input_files = 'input_files'
 # Конечная директория
