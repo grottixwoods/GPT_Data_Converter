@@ -1,4 +1,5 @@
-from textracter import convert_doc_to_docx, metadata_extracter, textract_converter, lines_editor, convert_xls_to_xlsx
+from textracter import convert_doc_to_docx, metadata_extracter, textract_converter, \
+    lines_editor, convert_xls_to_xlsx, jpg_to_txt
 import platform
 
 
@@ -13,4 +14,5 @@ if __name__ == '__main__':
         convert_doc_to_docx(input_files)
         metadata_extracter(input_files, output_txt)
     textract_converter(input_files, output_txt)
+    jpg_to_txt(input_files, output_txt)
     lines_editor(output_txt)
