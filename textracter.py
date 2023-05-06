@@ -12,24 +12,17 @@ from docx import Document
 import pytesseract
 from pdf2image import convert_from_path
 import PyPDF2
+import platform
+if platform.system() == "Windows":
+    from win32com.client import constants
+    import win32com.client as win32
 
 
 # __________________TODO__________________
-#     Доделать обработку сканов pdf
+#     
 
 # Список обрабатываемых textract'ом типов документов
-file_types = ('.docx', '.pdf', '.xlsx', '.ppt', '.xls')
-
-
-def has_text(file_path):
-    with open(f'input_files/{file_path}', 'rb') as file:
-        pdf_reader = PyPDF2.PdfReader(file)
-        for page in pdf_reader.pages:
-            text = page.extract_text()
-            if text:
-                return True
-    return False
-
+file_types = ('.docx', '.xlsx', '.ppt', '.xls')
 
 def convert_xls_to_xlsx(input_files):
     for filename in os.listdir(input_files):
@@ -56,8 +49,6 @@ def convert_xls_to_xlsx(input_files):
 
 
 def convert_doc_to_docx(input_files):
-    from win32com.client import constants
-    import win32com.client as win32
     for filename in os.listdir(input_files):
         if filename.endswith(".doc"):
             input_path = os.path.join('D:\\Projects\\tsiars_gpt\\input_files', filename)
@@ -119,27 +110,33 @@ def metadata_extracter(input_files, output_txt):
 
 
 def textract_converter(input_files, output_txt):
+
     for filename in os.listdir(input_files):
         a = False
         if filename.endswith('.pdf'):
             with open(f'input_files/{filename}', 'rb') as file:
+                a = False
                 pdf_reader = PyPDF2.PdfReader(file)
                 for page in pdf_reader.pages:
                     text = page.extract_text()
                     if text:
                         a = True
-            a = False
-            if a:
-                pass
-                # Перевод PDF -> Docx -> txt
-            else:
+            if a == False:
                 pages = convert_from_path(os.path.join(input_files, filename), 500)
                 text = ""
                 for pageNum, imgBlob in enumerate(pages):
                     text += pytesseract.image_to_string(imgBlob, lang='rus') + '\n'
-                with open(f'{filename[:-4]}.txt', 'w') as the_file:
-                    the_file.write(text)
-
+                
+                new_filename = os.path.splitext(filename)[0] + '.txt'
+                with open(os.path.join(output_txt, new_filename), 'w', encoding='utf-8') as f:
+                    f.write(text)
+                    
+            else:
+                text = textract.process(os.path.join(input_files, filename)).decode('utf-8')
+                new_filename = os.path.splitext(filename)[0] + '.txt'
+                with open(os.path.join(output_txt, new_filename), 'w', encoding='utf-8') as f:
+                    f.write(text)
+        
         if filename.endswith(file_types):
             text = textract.process(os.path.join(input_files, filename)).decode('utf-8')
             new_filename = os.path.splitext(filename)[0] + '.txt'
@@ -148,6 +145,7 @@ def textract_converter(input_files, output_txt):
 
 
 def lines_editor(output_txt):
+
     for filename in os.listdir(output_txt):
         if filename.endswith('.txt'):
             filepath = os.path.join(output_txt, filename)
@@ -156,3 +154,12 @@ def lines_editor(output_txt):
             lines = [line for line in lines if line.strip()]
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.writelines(lines)
+
+            with open(filepath, 'r', encoding='utf-8') as file:
+                text = file.read()
+            text = re.sub(r'([а-я])([А-Я])', r'\1 \2', text)
+            text = re.sub(r'(\w+)-\n(\w+)', r'\1\2', text)
+            text = re.sub(r'(?<=\w)– ', '', text)
+            text = re.sub(r'(?<=\w)- ', '', text)
+            with open(filepath, 'w', encoding='utf-8') as file:
+                file.write(text)            
