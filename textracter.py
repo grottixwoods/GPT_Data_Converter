@@ -69,7 +69,6 @@ def convert_doc_to_docx(input_files):
 
 def metadata_extracter(input_files, output_txt):
     df = pd.DataFrame(columns=['Meta', 'Path'])
-
     for filename in os.listdir(input_files):
         if filename.endswith(".docx"):
             doc = Document(os.path.join(input_files, filename))
@@ -111,7 +110,6 @@ def metadata_extracter(input_files, output_txt):
 
 
 def textract_converter(input_files, output_txt):
-
     for filename in os.listdir(input_files):
         a = False
         if filename.endswith('.pdf'):
@@ -157,7 +155,6 @@ def jpg_to_txt(input_files, output_txt):
 
 
 def lines_editor(output_txt):
-
     for filename in os.listdir(output_txt):
         if filename.endswith('.txt'):
             filepath = os.path.join(output_txt, filename)
