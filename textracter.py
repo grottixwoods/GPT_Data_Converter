@@ -24,7 +24,7 @@ if platform.system() == "Windows":
 
 # Список обрабатываемых textract'ом типов документов
 file_types = ('.docx', '.xlsx', '.ppt', '.odt')
-image_files = ('.jpg','.png','.jpeg','.bmp','tif')
+image_files = ('.jpg','.png','.jpeg','.bmp','.tif')
 
 def convert_xls_to_xlsx(input_files):
     for filename in os.listdir(input_files):
