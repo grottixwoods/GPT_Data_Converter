@@ -23,7 +23,8 @@ if platform.system() == "Windows":
 #     
 
 # Список обрабатываемых textract'ом типов документов
-file_types = ('.docx', '.xlsx', '.ppt', '.xls')
+file_types = ('.docx', '.xlsx', '.ppt', '.odt')
+image_files = ('.jpg','.png','.jpeg','.bmp','.tif')
 
 def convert_xls_to_xlsx(input_files):
     for filename in os.listdir(input_files):
@@ -51,7 +52,7 @@ def convert_xls_to_xlsx(input_files):
 
 def convert_doc_to_docx(input_files):
     for filename in os.listdir(input_files):
-        if filename.endswith(".doc"):
+        if filename.endswith('.doc'):
             input_path = os.path.join('D:\\Projects\\tsiars_gpt\\input_files', filename)
             word = win32.gencache.EnsureDispatch('Word.Application')
             doc = word.Documents.Open(input_path)
@@ -142,13 +143,9 @@ def textract_converter(input_files, output_txt):
             with open(os.path.join(output_txt, new_filename), 'w', encoding='utf-8') as f:
                 f.write(text)
 
-def jpg_to_txt(input_files, output_txt):
-    for filename in os.listdir(input_files):
-        if filename.endswith('.jpg'):
+        if filename.endswith(image_files):
             image = Image.open(os.path.join(input_files, filename))
-            # Используем pytesseract для распознавания текста на изображении
             text = pytesseract.image_to_string(image, lang='rus')
-            # Сохраняем текстовый результат в файл
             new_filename = os.path.splitext(filename)[0] + '.txt'
             with open(os.path.join(output_txt, new_filename), 'w', encoding='utf-8') as f:
                 f.write(text)
