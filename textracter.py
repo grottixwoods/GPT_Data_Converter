@@ -1,4 +1,5 @@
 import os
+import shutil
 import textract
 import xlrd
 import openpyxl
@@ -25,6 +26,17 @@ if platform.system() == "Windows":
 # Список обрабатываемых textract'ом типов документов
 file_types = ('.docx', '.xlsx', '.ppt', '.odt')
 image_files = ('.jpg','.png','.jpeg','.bmp','.tif')
+
+
+def move_subfolder_contents(folder_path):
+    for root, dirs, files in os.walk(folder_path):
+        if root != folder_path:  # Исключаем основную папку
+            for file in files:
+                src = os.path.join(root, file)
+                dst = os.path.join(folder_path, file)
+                if not os.path.exists(dst):
+                    shutil.move(src, dst)
+
 
 def convert_xls_to_xlsx(input_files):
     for filename in os.listdir(input_files):
@@ -170,7 +182,7 @@ def lines_editor(output_txt):
             text = text.replace(" ", " ")
             text = text.replace("�", "")
             text = text.replace("", " ")
-            # text = re.sub(r'[^\w\d,.\- ]', '', text)
+            text = re.sub(r'[^\w\d,.\- ]', '', text)
 
             with open(filepath, 'w', encoding='utf-8') as file:
                 file.write(text)            

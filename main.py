@@ -1,5 +1,5 @@
 from textracter import convert_doc_to_docx, metadata_extracter, textract_converter, \
-    lines_editor, convert_xls_to_xlsx
+    lines_editor, convert_xls_to_xlsx, move_subfolder_contents
 import platform
 
 
@@ -9,6 +9,7 @@ input_files = 'input_files'
 output_txt = 'output_txt'
 
 if __name__ == '__main__':
+    move_subfolder_contents(input_files)
     convert_xls_to_xlsx(input_files)
     if platform.system() == "Windows":
         convert_doc_to_docx(input_files)
