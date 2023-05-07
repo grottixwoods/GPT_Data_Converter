@@ -183,6 +183,7 @@ def lines_editor(output_txt):
             text = text.replace("�", "")
             text = text.replace("", " ")
             text = re.sub(r'[^\w\d,.\- ]', '', text)
+            text = re.sub(r'(?<=\b\w)\s(?=\w\b)', '', text)
 
             with open(filepath, 'w', encoding='utf-8') as file:
                 file.write(text)            
