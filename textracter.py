@@ -22,13 +22,12 @@ if platform.system() == "Windows":
     from win32com.client import constants
     import win32com.client as win32
 
-
 # __________________TODO__________________
 #     
 
 # Список обрабатываемых textract'ом типов документов
 file_types = ('.docx', '.xlsx', '.ppt', '.odt')
-image_files = ('.jpg','.png','.jpeg','.bmp','.tif')
+image_files = ('.jpg', '.png', '.jpeg', '.bmp', '.tif')
 
 
 def timeout_handler():
@@ -103,7 +102,7 @@ def metadata_extracter(input_files, output_txt):
                              "Comments": metadata.comments}
             print(metadata_dict)
             df = df._append({'Meta': metadata_dict,
-                            'Path': os.path.join(output_txt, f'{filename[:-5]}.txt')},
+                             'Path': os.path.join(output_txt, f'{filename[:-5]}.txt')},
                             ignore_index=True)
 
         elif filename.endswith(".pdf"):
@@ -120,10 +119,12 @@ def metadata_extracter(input_files, output_txt):
                 print(metadata_dict)
 
                 df = df._append({'Meta': metadata_dict,
-                                'Path': os.path.join(output_txt, f'{filename[:-5]}.txt')},
+                                 'Path': os.path.join(output_txt, f'{filename[:-5]}.txt')},
                                 ignore_index=True)
 
-        elif filename.endswith(".xlsx") or filename.endswith(".xlsm") or filename.endswith(".xltx") or filename.endswith(".xltm"):
+        elif filename.endswith(".xlsx") or filename.endswith(".xlsm") or filename.endswith(
+                ".xltx") or filename.endswith(".xltm"):
+            wb = openpyxl.load_workbook(os.path.join(input_files, filename))
             metadata_dict = {}
             try:
                 wb = openpyxl.load_workbook(os.path.join(input_files, filename))
@@ -137,7 +138,7 @@ def metadata_extracter(input_files, output_txt):
                 wb = None
             print(metadata_dict)
             df = df._append({'Meta': metadata_dict,
-                            'Path': os.path.join(output_txt, f'{filename[:-5]}.txt')},
+                             'Path': os.path.join(output_txt, f'{filename[:-5]}.txt')},
                             ignore_index=True)
 
     df.to_csv('dataframe.csv', index=False)
@@ -184,7 +185,7 @@ def textract_converter(input_files, output_txt):
                 new_filename = os.path.splitext(filename)[0] + '.txt'
                 with open(os.path.join(output_txt, new_filename), 'w', encoding='utf-8') as f:
                     f.write(text)
-        
+
         if filename.endswith(file_types):
             try:
                 text = textract.process(os.path.join(input_files, filename)).decode('utf-8')
@@ -217,6 +218,18 @@ def textract_converter(input_files, output_txt):
         os.remove(file_path)
             
 
+        if filename.endswith('.html'):
+            file_path = os.path.join(input_files, filename)
+            with open(file_path, 'rb') as html_file:
+                html_content = html_file.read()
+
+                soup = BeautifulSoup(html_content, 'html.parser')
+                text = soup.get_text()
+
+                new_filename = os.path.splitext(filename)[0] + '.txt'
+                with open(os.path.join(output_txt, new_filename), 'w', encoding='utf-8') as f:
+                    f.write(text)
+
 
 def lines_editor(output_txt):
     for filename in os.listdir(output_txt):
@@ -238,7 +251,7 @@ def lines_editor(output_txt):
             text = text.replace("�", "")
             text = text.replace("", " ")
             text = re.sub(r'(?<=\b\w)\s(?=\w\b)', '', text)
-            #text = re.sub(r'[^\w\d,.\- ]', '', text)
+            # text = re.sub(r'[^\w\d,.\- ]', '', text)
 
             with open(filepath, 'w', encoding='utf-8') as file:
                 file.write(text)            
