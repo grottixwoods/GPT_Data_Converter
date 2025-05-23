@@ -1,77 +1,80 @@
-from bs4 import BeautifulSoup
+"""Модуль для скачивания документов с веб-сайта."""
+from typing import List, NoReturn
+import os
 import urllib3
 import wget
-from textracter import converter, input_files, output_txt
-import os
+from bs4 import BeautifulSoup
+from textracter import extract_text_from_documents, input_files, output_txt
 
+# Константы
+URL_ROOT: str = 'https://www.pravovik24.ru'
+URL: str = f"{URL_ROOT}/documents"
 
-# Проверяем и создаем исходную директорию
-if not os.path.exists(input_files):
-    os.makedirs(input_files)
-if not os.path.exists(output_txt):
-    os.makedirs(output_txt)
+# Инициализация HTTP клиента
+HTTP_CLIENT = urllib3.PoolManager()
 
+def ensure_directories() -> None:
+    """Создает входную и выходную директории, если они не существуют."""
+    for directory in [input_files, output_txt]:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
 
-url_root = 'https://www.pravovik24.ru'
-url = "https://www.pravovik24.ru/documents"
+def download_documents() -> None:
+    """Скачивает документы с веб-сайта."""
+    response = HTTP_CLIENT.request('GET', URL)
+    soup = BeautifulSoup(response.data.decode('utf-8'), 'html.parser')
 
-http = urllib3.PoolManager()
-links = []
+    for link in soup.find_all('a'):
+        href = link.get('href')
+        if not href:
+            continue
 
+        if '/documents/dogovory/' in href:
+            process_dogovory_page(href)
+        elif 'documents' in href:
+            process_documents_page(href)
 
-def download():
-    response = http.request('GET', url)
+def process_dogovory_page(href: str) -> None:
+    """Обрабатывает страницу договоров и скачивает документы.
+    
+    Args:
+        href: URL страницы договоров
+    """
+    response = HTTP_CLIENT.request('GET', f"{URL_ROOT}{href}")
+    soup = BeautifulSoup(response.data.decode('utf-8'), 'html.parser')
+    
+    if 'documents' in href:
+        response = HTTP_CLIENT.request('GET', f"{URL_ROOT}{href}")
+        soup = BeautifulSoup(response.data.decode('utf-8'), 'html.parser')
+    
+    download_files_from_soup(soup)
 
-    soup = BeautifulSoup(
-        response.data.decode('utf-8'),
-        'html.parser'
-    )
+def process_documents_page(href: str) -> None:
+    """Обрабатывает страницу документов и скачивает файлы.
+    
+    Args:
+        href: URL страницы документов
+    """
+    response = HTTP_CLIENT.request('GET', f"{URL_ROOT}{href}")
+    soup = BeautifulSoup(response.data.decode('utf-8'), 'html.parser')
+    download_files_from_soup(soup)
 
-    for link in soup.findAll('a'):
-        buf = link.get('href')
-        if '/documents/dogovory/' in buf:
-            response_1 = http.request(
-                'GET',
-                url_root+buf
-            )
-            soup2 = BeautifulSoup(
-                response_1.data.decode('utf-8'),
-                'html.parser'
-            )
-            if 'documents' in buf:
-                response_2 = http.request(
-                    'GET',
-                    url_root+buf
-                )
-                soup2 = BeautifulSoup(
-                    response_2.data.decode('utf-8'),
-                    'html.parser'
-                )
-                for link in soup2.findAll('a'):
-                    buf = link.get('href')
-                    if 'upload' in buf:
-                        response = wget.download(
-                            url_root+buf,
-                            out=input_files
-                        )
-        elif 'documents' in buf:
-            response_1 = http.request(
-                'GET',
-                url_root+buf
-            )
-            soup2 = BeautifulSoup(
-                response_1.data.decode('utf-8'),
-                'html.parser'
-            )
-            for link in soup2.findAll('a'):
-                buf = link.get('href')
-                if 'upload' in buf:
-                    response = wget.download(
-                        url_root+buf,
-                        out=input_files
-                    )
+def download_files_from_soup(soup: BeautifulSoup) -> None:
+    """Скачивает файлы из объекта BeautifulSoup.
+    
+    Args:
+        soup: Объект BeautifulSoup с HTML-контентом
+    """
+    for link in soup.find_all('a'):
+        href = link.get('href')
+        if href and 'upload' in href:
+            wget.download(f"{URL_ROOT}{href}", out=input_files)
 
+def main() -> NoReturn:
+    """Выполняет основной процесс скачивания документов."""
+    ensure_directories()
+    download_documents()
+    extract_text_from_documents(input_files, output_txt)
 
 if __name__ == '__main__':
-    download()
-    converter()
+    main()
