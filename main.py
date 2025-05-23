@@ -1,18 +1,36 @@
-from textracter import convert_doc_to_docx, metadata_extracter, textract_converter, \
-    lines_editor, convert_xls_to_xlsx, move_subfolder_contents
+"""Основной модуль для конвертации и обработки документов."""
+from typing import NoReturn
 import platform
+from textracter import (
+    convert_doc_to_docx,
+    extract_metadata,
+    extract_text_from_documents,
+    clean_text_files,
+    convert_xls_to_xlsx,
+    move_files_to_root
+)
 
+# Пути к директориям
+INPUT_FILES: str = 'input_files'
+OUTPUT_TXT: str = 'output_txt'
 
-# Исходная директория
-input_files = 'input_files'
-# Конечная директория
-output_txt = 'output_txt'
+def main() -> NoReturn:
+    """Выполняет основной процесс обработки документов."""
+    # Перемещение содержимого из подпапок в основную директорию
+    move_files_to_root(INPUT_FILES)
+    
+    # Конвертация XLS файлов в формат XLSX
+    convert_xls_to_xlsx(INPUT_FILES)
+    
+    # Конвертация DOC файлов в формат DOCX (только для Windows)
+    if platform.system() == "Windows":
+        convert_doc_to_docx(INPUT_FILES)
+    
+    # Обработка документов и извлечение текста
+    extract_text_from_documents(INPUT_FILES, OUTPUT_TXT)
+    
+    # Очистка и форматирование извлеченного текста
+    clean_text_files(OUTPUT_TXT)
 
 if __name__ == '__main__':
-    move_subfolder_contents(input_files)
-    convert_xls_to_xlsx(input_files)
-    if platform.system() == "Windows":
-        convert_doc_to_docx(input_files)
-    #metadata_extracter(input_files, output_txt)
-    textract_converter(input_files, output_txt)
-    lines_editor(output_txt)
+    main()
